@@ -1,9 +1,16 @@
 <template>
-  <img :src="preview" :data-src="large" :class="{'preview': !loaded}"/>
+  <div class="wrapper" style="width: 200px; height: 300px">
+    <img
+      ref="img"
+      :src="preview"
+      :data-src="large"
+      :class="{'preview': !loaded}"
+    />
+  </div>
 </template>
 <script>
-import throttle from 'lodash/throttle'
-import debounce from 'lodash/debounce'
+import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 
 export default {
   name: "progressive-image",
@@ -13,6 +20,14 @@ export default {
     };
   },
   props: {
+    width: {
+      type: String,
+      default: "100%"
+    },
+    height: {
+      type: String,
+      default: "auto"
+    },
     large: {
       type: String,
       default: "about:blank"
@@ -24,10 +39,13 @@ export default {
   },
   computed: {},
   beforeMount() {
-    document.addEventListener("scroll", debounce(this.handleLoad.bind(this), 300));
+    document.addEventListener(
+      "scroll",
+      debounce(this.handleLoad.bind(this), 300)
+    );
   },
   mounted() {
-    this.handleLoad();
+    setTimeout(this.handleLoad.bind(this), 300)
   },
   methods: {
     handleLoad() {
@@ -35,7 +53,7 @@ export default {
         this.loadLargeImage().then(res => {
           console.log("loadedLargeImage");
           this.loaded = true;
-          document.removeEventListener(this.handleLoad.bind(this))
+          document.removeEventListener('scroll', this.handleLoad.bind(this));
         });
       }
     },
@@ -43,29 +61,31 @@ export default {
       if (!this.$el) return false;
       const scrollY = window.scrollY;
       const wH = window.innerHeight;
-      const {
-        top,
-        bottom,
-      } = this.$el.getBoundingClientRect();
+      const { top, bottom } = this.$el.getBoundingClientRect();
       return top < wH && bottom > 0;
     },
     loadLargeImage() {
       return new Promise((resolve, reject) => {
-        this.$el.onload = resolve;
-        this.$el.src = this.$el.dataset.src;
+        let img = this.$refs.img
+        img.onload = resolve;
+        img.src = img.dataset.src;
       });
     }
-  },
-  watch: {}
+  }
 };
 </script>
 <style scoped>
-img {
-  width: 200px;
-  height: 400px;
+.wrapper{
+  display: inline-block
 }
-.preview{
-  filter: blur(10px)
+img{
+  width: 100%;
+  height: 100%;
+  transition: all 500ms;
+  filter: blur(0)
+}
+.preview {
+  filter: blur(10px);
 }
 </style>
 
