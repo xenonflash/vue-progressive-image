@@ -1,10 +1,9 @@
 <template>
-  <div class="wrapper" style="width: 200px; height: 300px">
+  <div class="wrapper" :style="`width: ${width}; height: ${height}`" :class="{'preview': !loaded}">
     <img
       ref="img"
       :src="preview"
       :data-src="large"
-      :class="{'preview': !loaded}"
     />
   </div>
 </template>
@@ -22,7 +21,7 @@ export default {
   props: {
     width: {
       type: String,
-      default: "100%"
+      default: "200px"
     },
     height: {
       type: String,
@@ -45,15 +44,16 @@ export default {
     );
   },
   mounted() {
-    setTimeout(this.handleLoad.bind(this), 300)
+    setTimeout(this.handleLoad.bind(this), 300);
   },
   methods: {
     handleLoad() {
       if (this.isInView() && !this.loaded) {
-        this.loadLargeImage().then(res => {
-          console.log("loadedLargeImage");
-          this.loaded = true;
-          document.removeEventListener('scroll', this.handleLoad.bind(this));
+        requestAnimationFrame(() => {
+          this.loadLargeImage().then(res => {
+            this.loaded = true;
+            document.removeEventListener("scroll", this.handleLoad.bind(this));
+          });
         });
       }
     },
@@ -66,7 +66,7 @@ export default {
     },
     loadLargeImage() {
       return new Promise((resolve, reject) => {
-        let img = this.$refs.img
+        let img = this.$refs.img;
         img.onload = resolve;
         img.src = img.dataset.src;
       });
@@ -75,17 +75,21 @@ export default {
 };
 </script>
 <style scoped>
-.wrapper{
-  display: inline-block
+.wrapper {
+  display: inline-block;
+  overflow: hidden;
 }
-img{
+.wrapper.preview{
+  filter: blur(4px)
+}
+img {
   width: 100%;
   height: 100%;
-  transition: all 500ms;
-  filter: blur(0)
+  transition: all 700ms;
+  filter: blur(0);
 }
-.preview {
-  filter: blur(10px);
+.preview img{
+  filter: blur(30px);
 }
 </style>
 
