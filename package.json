@@ -2,6 +2,7 @@
   "name": "progressive-img",
   "description": "A Vue.js project",
   "version": "1.0.0",
+  "main": "./src/components/progressive-image.vue",
   "author": "yankechao <yankechao@vipkid.com.cn>",
   "license": "MIT",
   "private": true,

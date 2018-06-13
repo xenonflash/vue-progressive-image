@@ -2,7 +2,7 @@
   <div class="wrapper" :style="`width: ${width}; height: ${height}`" :class="{'preview': !loaded}">
     <img
       ref="img"
-      :src="preview"
+      :src="previewImageSrc"
       :data-src="large"
     />
   </div>
@@ -19,6 +19,13 @@ export default {
     };
   },
   props: {
+    /**
+     * 如果是七牛资源可以 通过query命令获取预览图
+     */
+    useQiniuApi: {
+      type: Boolean,
+      default: false
+    },
     width: {
       type: String,
       default: "200px"
@@ -33,10 +40,18 @@ export default {
     },
     preview: {
       type: String,
-      default: "http://p55u3vy2u.bkt.clouddn.com/mp/kankan/p1461851991.webp"
+      default: require('../assets/blur.jpg')
     }
   },
-  computed: {},
+  computed: {
+    previewImageSrc() {
+      if (this.useQiniuApi) {
+        return this.large + "?imageView2/3/w/42/h/42"
+      } else {
+        return this.preview
+      }
+    },
+  },
   beforeMount() {
     document.addEventListener(
       "scroll",
@@ -50,8 +65,8 @@ export default {
     handleLoad() {
       if (this.isInView() && !this.loaded) {
         requestAnimationFrame(() => {
+          this.loaded = true;
           this.loadLargeImage().then(res => {
-            this.loaded = true;
             document.removeEventListener("scroll", this.handleLoad.bind(this));
           });
         });
