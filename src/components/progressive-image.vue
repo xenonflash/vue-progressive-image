@@ -2,6 +2,9 @@
   <img :src="preview" :data-src="large" :class="{'preview': !loaded}"/>
 </template>
 <script>
+import throttle from 'lodash/throttle'
+import debounce from 'lodash/debounce'
+
 export default {
   name: "progressive-image",
   data() {
@@ -21,7 +24,7 @@ export default {
   },
   computed: {},
   beforeMount() {
-    document.addEventListener("scroll", this.handleLoad.bind(this));
+    document.addEventListener("scroll", debounce(this.handleLoad.bind(this), 300));
   },
   mounted() {
     this.handleLoad();
@@ -32,6 +35,7 @@ export default {
         this.loadLargeImage().then(res => {
           console.log("loadedLargeImage");
           this.loaded = true;
+          document.removeEventListener(this.handleLoad.bind(this))
         });
       }
     },
