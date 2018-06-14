@@ -8,14 +8,14 @@
   </div>
 </template>
 <script>
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
 
 export default {
   name: "progressive-image",
   data() {
     return {
-      loaded: false
+      loaded: false,
+      handlerRef: null, // cache handle reference, when loaded, will remove scroll event listener by this reference
     };
   },
   props: {
@@ -53,21 +53,22 @@ export default {
     },
   },
   beforeMount() {
+    this.handler = debounce(this.handleLoad.bind(this), 300)
     document.addEventListener(
       "scroll",
-      debounce(this.handleLoad.bind(this), 300)
+      this.handler
     );
   },
   mounted() {
     setTimeout(this.handleLoad.bind(this), 300);
   },
   methods: {
-    handleLoad() {
+    handleLoad(callee, e) {
       if (this.isInView() && !this.loaded) {
         requestAnimationFrame(() => {
           this.loaded = true;
           this.loadLargeImage().then(res => {
-            document.removeEventListener("scroll", this.handleLoad.bind(this));
+            document.removeEventListener("scroll", this.handler);
           });
         });
       }
