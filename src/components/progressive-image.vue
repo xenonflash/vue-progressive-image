@@ -41,6 +41,10 @@ export default {
     preview: {
       type: String,
       default: require('../assets/blur.jpg')
+    },
+    debounceDelay: {
+      type: Number,
+      defauflt: 300
     }
   },
   computed: {
@@ -53,14 +57,14 @@ export default {
     },
   },
   beforeMount() {
-    this.handler = debounce(this.handleLoad.bind(this), 300)
+    this.handler = debounce(this.handleLoad.bind(this), this.debounceDelay)
     document.addEventListener(
       "scroll",
       this.handler
     );
   },
   mounted() {
-    setTimeout(this.handleLoad.bind(this), 300);
+    setTimeout(this.handleLoad.bind(this), this.debounceDelay);
   },
   methods: {
     handleLoad(callee, e) {
@@ -95,6 +99,7 @@ export default {
   display: inline-block;
   overflow: hidden;
 }
+/* 给wrapper设定固定blur, 防止 image blur值太大导致影响周围内容 */
 .wrapper.preview{
   filter: blur(4px)
 }
