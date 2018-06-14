@@ -1,6 +1,6 @@
 # progressive-img
 
-> A Vue.js project
+> 渐进加载图片, 先显示模糊效果, 滚动到视图内, 加载大图
 
 ## Build Setup
 
