@@ -108,9 +108,11 @@ img {
   height: 100%;
   transition: all 700ms;
   filter: blur(0);
+  transform: scale(1)
 }
 .preview img{
   filter: blur(30px);
+  transform: scale(0.95)
 }
 </style>
 
